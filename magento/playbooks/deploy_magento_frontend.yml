@@ -86,12 +86,12 @@
 
     - name: Copiar configuración de Apache para Magento
       copy:
-        src: ../templates/000-default.conf
+        src: ../templates/magento.conf
         dest: /etc/apache2/sites-available/magento.conf
         mode: 0644
 
     - name: Activar configuración de Magento en Apache
-      command: a2ensite 000-default.conf
+      command: a2ensite magento.conf
 
     - name: Configurar Magento
       command: 

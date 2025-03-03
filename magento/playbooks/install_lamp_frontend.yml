@@ -16,7 +16,7 @@
 
     - name: Copiar el archivo de configuración de Apache
       copy:
-        src: ../templates/000-default.conf
+        src: ../templates/magento.conf
         dest: /etc/apache2/sites-available/
         mode: 0755
         
