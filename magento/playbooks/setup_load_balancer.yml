@@ -1,0 +1,37 @@
+---
+- name: Configurar Nginx como balanceador de carga
+  hosts: balanceador
+  become: yes
+
+  vars_files:
+    - ../vars/variables.yml
+  
+  
+  tasks:
+
+
+
+    - name: Actualizar los repositorios
+      apt:
+        update_cache: yes
+
+    - name: Actualizar los paquetes
+      apt:
+        upgrade: dist
+
+    - name: Instalar HAProxy
+      apt:
+        name: haproxy
+        state: present
+
+    - name: Copiar configuración de balanceador de carga para HAProxy
+      template:
+        src: ../templates/haproxy.cfg
+        dest: /etc/haproxy/haproxy.cfg
+
+    - name: Habilitar y reiniciar el servicio HAProxy
+      systemd:
+        name: haproxy
+        state: restarted
+        enabled: yes
+       
