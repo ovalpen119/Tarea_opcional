@@ -124,18 +124,12 @@
     - name: Copiar el archivo .htaccess al directorio de WordPress
       copy:
         src: ../htaccess/.htaccess
-        dest: "{{ wordpress.directory }}/.htaccess"
+        dest: "{{ magento.directory }}/.htaccess"
         owner: www-data
         group: www-data
         mode: '0644'
 
-    
-    - name: Asegurar que $_SERVER['HTTPS'] esté en wp-config.php
-      lineinfile:
-        path: /var/www/html/wp-config.php
-        line: "$_SERVER['HTTPS'] = 'on';"
-        state: present
-        insertbefore: "^define\\( 'DB_NAME', 'wordpress' \\);"
+  
 
     - name: Reiniciar el servidor web Apache
       service:

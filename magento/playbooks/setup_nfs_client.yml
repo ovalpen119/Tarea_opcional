@@ -16,11 +16,9 @@
         name: nfs-common
         state: present
 
-
-
-    - name: Montar el directorio WordPress
+    - name: Montar el directorio Magento
       command: 
-        mount {{ nfsserver.server_ip }}:{{ wordpress.directory }} {{ wordpress.directory }}
+        mount {{ nfsserver.server_ip }}:{{ magento.directory }} {{ magento.directory }}
 
 
     - name: Verificar el espacio en disco
@@ -29,5 +27,5 @@
     - name: Actualizar el archivo /etc/fstab
       lineinfile:
         path: /etc/fstab
-        line: "{{ nfsserver.server_ip }}:{{ wordpress.directory }} {{ wordpress.directory }} nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0"
+        line: "{{ nfsserver.server_ip }}:{{ magento.directory }} {{ magento.directory }} nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0"
         state: present
