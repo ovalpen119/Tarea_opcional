@@ -26,12 +26,8 @@
         dest: "/opt/opensearch"
         remote_src: yes
 
-
     - name: Eliminar contenido en /var/www/html/
-      file:
-        path: /var/www/html/
-        state: absent
-
+      shell: rm -rf /var/www/html/*
 
     - name: Descargar e instalar Composer
       get_url:
@@ -46,34 +42,42 @@
         --install-dir=/usr/local/bin 
         --filename=composer
 
-    - name: Crear directorio de Magento
-      file:
-        path: /var/www/html/
-        state: directory
-        owner: www-data
-        group: www-data
-        mode: 0755
+   # - name: Crear directorio de Magento
+   #   file:
+   #     path: /var/www/html/
+   #     state: directory
+    #    owner: www-data
+    #    group: www-data
+    #    mode: 0755
 
 
     - name: Descargar el código fuente de Magento
       command: 
         composer create-project \
         --repository-url=https://repo.magento.com/ \
+        --prefer-dist \
+        --parallel \
         magento/project-community-edition \
         /var/www/html/
 
     - name: Instalar Magento
-      hosts: magento_servers
       become: yes
-      vars:
-        db_name: "{{ db.name }}"
-        db_user: "{{ db.user }}"
-        db_password: "{{ db.password }}"
-        db_host: "{{ ip.BACKEND_PRIVATE_IP }}"  # Base de datos en el backend
-        magento_admin_user: "{{ magento.admin_user }}"
-        magento_admin_password: "{{ magento.admin_password }}"
-        magento_admin_email: "{{ magento.admin_email }}"
-        magento_base_url: "{{ magento.domain }}"  # Dominio de Magento
+      shell: |
+        php /var/www/html/bin/magento setup:install \
+          --base-url={{ magento.domain }} \
+          --db-host={{ ip.BACKEND_PRIVATE_IP }} \
+          --db-name={{ db.name }} \
+          --db-user={{ db.user }} \
+          --db-password={{ db.password }} \
+          --admin-firstname="Admin" \
+          --admin-lastname="User" \
+          --admin-email={{ magento.admin_email }} \
+          --admin-user={{ magento.admin_user }} \
+          --admin-password={{ magento.admin_password }} \
+          --language={{ magento.language }} \
+          --currency={{ magento.currency }} \
+          --timezone={{ magento.timezone }} \
+          --use-rewrites="1"
 
 
     - name: Asegurar permisos

@@ -19,8 +19,16 @@
         classic: yes
         state: present
 
+    - name: Detener HAProxy para liberar el puerto 80
+      systemd:
+        name: haproxy
+        state: stopped
+
     - name: Solicitar y configurar certificado SSL/TLS a Let's Encrypt con certbot
-      command:
-        cmd: certbot --standalone -m {{ certbot.email }} --agree-tos --no-eff-email -d  {{ certbot.domain }} --non-interactive
+      command: certbot certonly --standalone -m {{ certbot.email }} --agree-tos --no-eff-email -d {{ certbot.domain }} --non-interactive
 
 
+    - name: Reiniciar HAProxy
+      systemd:
+        name: haproxy
+        state: started
