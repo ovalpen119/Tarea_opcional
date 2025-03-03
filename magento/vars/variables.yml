@@ -23,7 +23,8 @@ magento:
     currency: "USD"
     timezone: "Europe/Madrid"
     language: "es_ES"
-
+    public_key: 92c5b017e28d7a0c03ccd3e967812cd2
+    private_key: 14113789c8b1646641f5ec969e1d28c8
 
 nfsserver: 
     server_ip: "172.31.43.166"
@@ -34,3 +35,4 @@ nfscliente:
 balanceador:
     IP_FRONTEND_1: "172.31.42.35"
     IP_FRONTEND_2: "172.31.39.193"
+

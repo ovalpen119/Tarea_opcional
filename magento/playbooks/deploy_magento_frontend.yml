@@ -42,26 +42,46 @@
         --install-dir=/usr/local/bin 
         --filename=composer
 
-   # - name: Crear directorio de Magento
-   #   file:
-   #     path: /var/www/html/
-   #     state: directory
-    #    owner: www-data
-    #    group: www-data
-    #    mode: 0755
 
+
+    - name: Asegurar permisos
+      file:
+        path: /var/www/html
+        owner: www-data
+        group: www-data
+        mode: 0755
+
+    - name: Instalar PHP y los módulos necesarios
+      apt: 
+        name:
+          - unzip  
+        state: present
+
+    - name: Cambiar propiedad de los archivos a www-data
+      ansible.builtin.file:
+        path: /var/www/html
+        owner: www-data
+        group: www-data
+        recurse: yes
+
+    - name: Establecer permisos 755 en los archivos
+      ansible.builtin.file:
+        path: /var/www/html
+        mode: '0755'
+        recurse: yes
 
     - name: Descargar el código fuente de Magento
-      command: 
-        composer create-project \
-        --repository-url=https://repo.magento.com/ \
-        --prefer-dist \
-        --parallel \
-        magento/project-community-edition \
-        /var/www/html/
+      command: >
+        composer create-project 
+        --repository-url=https://repo.magento.com/ 
+        --prefer-dist 
+        magento/project-community-edition /var/www/html/ 
+
+    - name: Configurar las claves de acceso de Magento para Composer
+      command: composer config --global http-basic.repo.magento.com 92c5b017e28d7a0c03ccd3e967812cd2 14113789c8b1646641f5ec969e1d28c8
+      
 
     - name: Instalar Magento
-      become: yes
       shell: |
         php /var/www/html/bin/magento setup:install \
           --base-url={{ magento.domain }} \
@@ -96,33 +116,6 @@
 
     - name: Activar configuración de Magento en Apache
       command: a2ensite magento.conf
-
-    - name: Configurar Magento
-      command: 
-        php /var/www/html/bin/magento setup:install \
-        --base-url={{ magento_base_url }} \
-        --db-host={{ db_host }} \
-        --db-name={{ db_name }} \
-        --db-user={{ db_user }} \
-        --db-password={{ db_password }} \
-        --admin-firstname="Admin" \
-        --admin-lastname="User" \
-        --admin-email={{ magento_admin_email }} \
-        --admin-user={{ magento_admin_user }} \
-        --admin-password={{ magento_admin_password }} \
-        --language={{ magento.language }} \
-        --currency={{ magento.currency }} \
-        --timezone={{ magento.timezone }} \
-        --use-rewrites="1"
-
-
-    - name: Configurar permisos para Magento
-      file:
-        path: /var/www/html/
-        owner: www-data
-        group: www-data
-        recurse: yes
-        mode: '0755'
 
 
     - name: Copiar el archivo .htaccess al directorio de WordPress
